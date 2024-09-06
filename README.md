@@ -87,11 +87,16 @@ the [model checkpoint](https://drive.google.com/drive/folders/1YwDhqC_M9ACBnGjn_
    python web_interface.py
    ```
    then open the browser and enter `http://127.0.0.1:7860/` to access the website.
-3. you can also build the docker image and run it:
-   ```bash
-   docker build -t mmcbm .
-   docker run --name mmcbm -p 7860:7860 mmcbm
-   ```
+
+3. We also provide a human evaluation website, used for doctors to diagnose the disease based on the model's prediction.
+   + For blackbox model:
+       ```bash
+       python web_human_blackbox_evaluation.py
+       ```
+   + For MMCBM model:
+       ```bash
+       python web_human_mmcbm_evaluation.py
+       ```
    then open the browser and enter `http://127.0.0.1:7890` to access the website.
 
 📍**Command Line :**
