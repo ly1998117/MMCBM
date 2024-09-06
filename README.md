@@ -17,6 +17,7 @@
 * **`2024.09.05`** 🌟 We have submitted our paper to Nature Communications. The paper is under review.
 * **`2024.06.03`** 🌟 We have open-sourced the checkpoint of **MMCBM**.
 
+
 ---
 ## 👀 Introduction
 This is the official repository for **A Concept-based Interpretable Model for the Diagnosis of Choroid Neoplasias using Multimodal Data**
@@ -60,23 +61,35 @@ You must strictly comply with the above restrictions.
 ## Preparation
 
 📍**download**
-   
-the [model checkpoint](https://drive.google.com/drive/folders/1YwDhqC_M9ACBnGjn_8IZouWHgJx1ue5Q?usp=drive_link) place it.
+download the checkpoint from the [model checkpoint](https://drive.google.com/drive/folders/1YwDhqC_M9ACBnGjn_8IZouWHgJx1ue5Q?usp=drive_link), and put it in the `work_dir/result` directory. 
+After downloading, the directory structure should look like this:
+ + backbone: pretrained encoders trained on the same dataset split as MMCBM. Put the backbone in 
+   ```bash
+    work_dir/result/Efficientb0_SCLS_attnscls_CrossEntropy_32
+   ```
+ + MMCBM (Optional): the checkpoint of the MMCBM model. Put the MMCBM in
+   ```bash
+   work_dir/result/CAV_m2CBM_sigmoid_C0.1CrossEntropy_32_report_strict_aow_zero_MM_max
+   ```
 
-    + backbone:  at 
-      ```bash
-       work_dir/result/Efficientb0_SCLS_attnscls_CrossEntropy_32
-      ```
-    + MMCBM: at 
-      ```bash
-      work_dir/result/CAV_m2CBM_sigmoid_C0.1CrossEntropy_32_report_strict_aow_zero_MM_max
-      ```
 
 📍 ⚙️**configuration**
 + ChatGPT
    fill in the `openai_info` section in `params.py` with your own `api_key` and `api_base` from OpenAI. 
 + Tencent Translation (Optional)
    fill in the `tencent_info` section in `params.py` with your own `app_id` and `app_key` from Tencent Cloud.
+## ♻️ Training
+To train the MMCBM, you should first download our CTI dataset and put it in the `<work dir>/data` directory. 
+And then download the pre-trained backbone and put it in the `<work dir>/result/Efficientb0_SCLS_attnscls_CrossEntropy_32` directory.
+Then you can run the following command in the terminal:
+```bash
+    python train_CAV_CBM.py --name <dirname of experiment> --backbone <backbone dir> --epoch 200 --lr 1e-3 --device 0 --bz 8 --k 0
+```
+
+For five-fold cross-validation, you can run the following command in the terminal:
+```bash
+    python execute_concept.py --name <dirname of experiment>  --bz 8  --backbone <backbone dir> --clip_name cav --device 1,2,3,4,5 --k 0,1,2,3,4,5 --lr 0.001
+```
 
 ## 🔮 Usage
 📍 **Web Interface**
