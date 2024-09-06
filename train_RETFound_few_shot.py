@@ -13,19 +13,12 @@ from utils.metrics import *
 from loss import Loss
 from utils.decorator import decorator_args
 from trainer.train_helper_backbone import TrainHelperBackbone
-from params import modalities
 
 
 def get_model_opti(args):
-    from models.backbone.MultiModels import MMAttnSCLSEfficientNet
-    model = MMAttnSCLSEfficientNet(
-        input_channels=3,
-        model_name=args.model,
-        fusion=args.fusion,
-        spatial_dims=args.spatial_dims,
-        num_class=args.out_channel,
-        modalities=modalities,
-    )
+    from few_shot.model import init_model
+    model = init_model(args.device)
+    args.transform = model.transform
     opt = torch.optim.AdamW(params=model.parameters(), lr=args.lr)
     return model, opt
 
@@ -35,21 +28,13 @@ def get_args(args) -> argparse.Namespace:
     # enabling cudnn determinism appears to speed up training by a lot
     torch.backends.cudnn.deterministic = not args.cudnn_nondet
     args.down_sample = False
-    args.dir_name = f'Efficient{args.model}_SCLS'
+    args.dir_name = f'RETFound'
     args.spatial_dims = 2
-    args.clip_name = 'backbone'
+    args.clip_name = 'RET'
+    args.lr = 1e-3
+    args.bz = 8
     ###################### debug ######################
-    # args.name = 'M2_TestOnly'
-    # args.extra_data = True
-    # args.k = 0
-    # args.modality = 'M2'
-    # args.lr = 1e-4
-    # args.epochs = 1
-    # args.plot = True
-    # args.infer = True
-    # args.resume = True
-    # args.device = 'cuda:0'
-    # args.bz = 1
+    args.extra_data = False
     ###################### debug ######################
 
     args.metrics = [

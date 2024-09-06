@@ -17,12 +17,9 @@ parser = argparse.ArgumentParser(description="Train CAV CBM model.")
 parser.add_argument('--name', type=str, required=True, help='Name of the experiment')
 parser.add_argument('--extra_data', type=str, required=True, help='Extra data description')
 parser.add_argument('--device', type=str, required=True, help='GPU device number')
-parser.add_argument('--bz', type=int, required=True, help='Batch size')
-parser.add_argument('--lr', type=float, required=True, help='Batch size')
 parser.add_argument('--k', type=str, required=True, help='K-fold number')
-parser.add_argument('--model', type=str, default='b0', help='Clip name')
-parser.add_argument('--seed', type=int, default=32, help='Random seed')
-parser.add_argument('--valid_only', action='store_true', help='Only validate the model', default=False)
+parser.add_argument('--n_shot', type=str, required=True, help='Mark of the experiment')
+parser.add_argument('--epoch', type=int, default=200, help='Mark of the experiment')
 
 args = parser.parse_args()
 
@@ -38,26 +35,25 @@ if isinstance(args.device, str):
         args.device = args.device.split(',')
         args.device = [int(i) for i in args.device]
     else:
-        args.device = [int(args.device) for _ in range(len(args.fold))]
+        args.device = [int(args.device) for _ in range(len(args.k))]
     print(args.device)
 else:
     raise ValueError('device must be None or str')
 
-scripts = 'train_efficient_scls.py'
+scripts = 'train_RETFound_few_shot.py'
 k = args.k
 device = args.device
+if args.n_shot != 'full':
+    args.modality = 'MMOnly'
+    args.mark = f'{args.n_shot}shot'
+else:
+    args.modality = 'MM'
+    args.mark = 'full'
 commands = []
-
-if hasattr(args, 'valid_only'):
-    if args.valid_only:
-        args.valid_only = ''
-    else:
-        del args.valid_only
 
 for f, d in zip(k, device):
     args.k = f
     args.device = d
-
     commands.append(
         ' '.join([f'python {scripts}'] + [f'--{k} {v}' for k, v in vars(args).items()])
     )
